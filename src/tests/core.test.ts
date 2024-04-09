@@ -1,4 +1,4 @@
-import { getCoupons } from "../core";
+import { calculateDiscount, getCoupons } from "../core";
 
 describe("getCoupons", () => {
   it("should return an array of coupons", () => {
@@ -22,5 +22,28 @@ describe("getCoupons", () => {
       expect(coupon.discount).toBeGreaterThan(0);
       expect(coupon.discount).toBeLessThanOrEqual(1);
     });
+  });
+});
+
+describe("calculateDiscount", () => {
+  it("should return valid discount if given valid code", () => {
+    expect(calculateDiscount(100, "SAVE10")).toBe(90);
+    expect(calculateDiscount(100, "SAVE20")).toBe(80);
+  });
+
+  it("should return 'Invalid price' if given invalid price", () => {
+    expect(calculateDiscount(-100, "SAVE10")).toMatch(/invalid/i);
+  });
+
+  it("should handle non number price", () => {
+    expect(calculateDiscount("100" as any, "SAVE10")).toMatch(/invalid/i);
+  });
+
+  it("should handle invalid discount code", () => {
+    expect(calculateDiscount(100, "INVALID")).toBe(100);
+  });
+
+  it("should handle non string discount code", () => {
+    expect(calculateDiscount(100, 123 as any)).toMatch(/invalid/i);
   });
 });
