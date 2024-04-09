@@ -1,5 +1,6 @@
 import {
   calculateDiscount,
+  canDrive,
   getCoupons,
   isPriceInRange,
   isValidUsername,
@@ -143,5 +144,26 @@ describe("isValidUsername", () => {
     expect(isValidUsername(12345 as any)).toBeFalsy();
     expect(isValidUsername(null as any)).toBeFalsy();
     expect(isValidUsername(undefined as any)).toBeFalsy();
+  });
+});
+
+describe("canDrive", () => {
+  it("should throw error if country is not in the list", () => {
+    expect(canDrive(16, "IN" as any)).toMatch(/invalid/i);
+  });
+
+  it("should return false if age is below legal driving age", () => {
+    expect(canDrive(15, "US")).toBeFalsy();
+    expect(canDrive(16, "UK")).toBeFalsy();
+  });
+
+  it("should return true if age is at legal driving age", () => {
+    expect(canDrive(16, "US")).toBeTruthy();
+    expect(canDrive(17, "UK")).toBeTruthy();
+  });
+
+  it("should return true if age is above legal driving age", () => {
+    expect(canDrive(17, "US")).toBeTruthy();
+    expect(canDrive(18, "UK")).toBeTruthy();
   });
 });

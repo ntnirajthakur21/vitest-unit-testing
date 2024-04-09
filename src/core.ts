@@ -68,3 +68,17 @@ export const isValidUsername = (username: string): boolean => {
 
   return username.length >= minLength && username.length <= maxLength;
 };
+
+type TCountries = "US" | "UK";
+export const canDrive = (age: number, countryCode: TCountries) => {
+  const legalDrivingAge: Record<TCountries, number> = {
+    US: 16,
+    UK: 17,
+  };
+
+  if (!legalDrivingAge[countryCode]) {
+    return "Invalid country code";
+  }
+
+  return age >= legalDrivingAge[countryCode];
+};
