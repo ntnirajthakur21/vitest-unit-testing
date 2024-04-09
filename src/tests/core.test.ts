@@ -152,10 +152,28 @@ describe("canDrive", () => {
     expect(canDrive(16, "IN" as any)).toMatch(/invalid/i);
   });
 
-  it("should return false if age is below legal driving age", () => {
-    expect(canDrive(15, "US")).toBeFalsy();
-    expect(canDrive(16, "UK")).toBeFalsy();
-  });
+  it.each([
+    {
+      age: 15,
+      country: "US",
+      expected: false,
+    },
+    {
+      age: 16,
+      country: "UK",
+      expected: false,
+    },
+    {
+      age: 13,
+      country: "UK",
+      expected: false,
+    },
+  ])(
+    "should return $expected for $age is below legal driving age in $country",
+    ({ age, country, expected }) => {
+      expect(canDrive(age, country as any)).toBe(expected);
+    }
+  );
 
   it("should return true if age is at legal driving age", () => {
     expect(canDrive(16, "US")).toBeTruthy();
