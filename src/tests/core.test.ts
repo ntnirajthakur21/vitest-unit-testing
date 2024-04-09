@@ -1,4 +1,9 @@
-import { calculateDiscount, getCoupons, validateUserInput } from "../core";
+import {
+  calculateDiscount,
+  getCoupons,
+  isPriceInRange,
+  validateUserInput,
+} from "../core";
 
 describe("getCoupons", () => {
   it("should return an array of coupons", () => {
@@ -84,5 +89,24 @@ describe("validateUserInput", () => {
 
   it("should return error if age is too high", () => {
     expect(validateUserInput("niraj", 101)).toMatch(/invalid/i);
+  });
+});
+
+describe("isPriceInRange", () => {
+  it("should retun false if price is outside value", () => {
+    expect(isPriceInRange(10, 20, 30)).toBeFalsy();
+    expect(isPriceInRange(100, 20, 30)).toBeFalsy();
+  });
+
+  it("should return true if price is within range", () => {
+    expect(isPriceInRange(25, 20, 30)).toBeTruthy();
+  });
+
+  it("should return true if price is equal to min value", () => {
+    expect(isPriceInRange(20, 20, 30)).toBeTruthy();
+  });
+
+  it("should return true if price is equal to max value", () => {
+    expect(isPriceInRange(30, 20, 30)).toBeTruthy();
   });
 });
