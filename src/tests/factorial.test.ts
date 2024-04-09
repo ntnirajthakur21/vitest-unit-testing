@@ -1,4 +1,4 @@
-import factorial from "../factorial.test";
+import factorial from "../factorial";
 
 describe("factorial", () => {
   it("should return 1 if the number is 0", () => {
