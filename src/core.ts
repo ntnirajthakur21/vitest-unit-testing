@@ -59,3 +59,12 @@ export const isPriceInRange = (
 ) => {
   return price >= minPrice && price <= maxPrice;
 };
+
+export const isValidUsername = (username: string): boolean => {
+  const minLength = 5;
+  const maxLength = 15;
+
+  if (!username) return false;
+
+  return username.length >= minLength && username.length <= maxLength;
+};
