@@ -1,4 +1,4 @@
-import { calculateDiscount, getCoupons } from "../core";
+import { calculateDiscount, getCoupons, validateUserInput } from "../core";
 
 describe("getCoupons", () => {
   it("should return an array of coupons", () => {
@@ -45,5 +45,44 @@ describe("calculateDiscount", () => {
 
   it("should handle non string discount code", () => {
     expect(calculateDiscount(100, 123 as any)).toMatch(/invalid/i);
+  });
+});
+
+describe("validateUserInput", () => {
+  it("should return 'Validation successful' if given valid input", () => {
+    expect(validateUserInput("niraj", 24)).toMatch(/success/i);
+  });
+
+  it("should return 'Invalid username' if given invalid username", () => {
+    expect(validateUserInput("ni", 24)).toMatch(/invalid/i);
+  });
+
+  it("should return 'Invalid age' if given invalid age", () => {
+    expect(validateUserInput("niraj", 10)).toMatch(/invalid/i);
+  });
+
+  it("should handle non string username", () => {
+    expect(validateUserInput(123 as any, 24)).toMatch(/invalid/i);
+  });
+
+  it("should handle non number age", () => {
+    expect(validateUserInput("niraj", "24" as any)).toMatch(/invalid/i);
+  });
+
+  it("should return error if username is too long", () => {
+    const username = "a".repeat(256);
+    expect(validateUserInput(username, 24)).toMatch(/invalid/i);
+  });
+
+  it("should return error if username is too short", () => {
+    expect(validateUserInput("", 24)).toMatch(/invalid/i);
+  });
+
+  it("should return error if age is too low", () => {
+    expect(validateUserInput("niraj", 10)).toMatch(/invalid/i);
+  });
+
+  it("should return error if age is too high", () => {
+    expect(validateUserInput("niraj", 101)).toMatch(/invalid/i);
   });
 });
