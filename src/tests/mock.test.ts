@@ -1,8 +1,12 @@
 import { getExchangeRate } from "../libs/currency";
-import { getPriceInCurrency } from "../mocking";
+import { getShippingQuote } from "../libs/shipping";
+import { getPriceInCurrency, getShippingInfo } from "../mocking";
 
 // This will mock the getExchangeRate function from the currency module
+// this line is hoisted to the top of the file - so it will be executed before the getPriceInCurrency function is called
 vi.mock("../libs/currency");
+
+vi.mock("../libs/shipping");
 
 describe("mock", () => {
   it("should mock a function", () => {
@@ -44,5 +48,28 @@ describe("getPriceInCurrency", () => {
 
     const price = getPriceInCurrency(10, "AUD");
     expect(price).toBe(16);
+  });
+});
+
+describe("getShippingInfo", () => {
+  it("should return the shipping cost and estimated days", () => {
+    vi.mocked(getShippingQuote).mockImplementation(() => ({
+      cost: 10,
+      estimatedDays: 2,
+    }));
+
+    const shippingInfo = getShippingInfo("US");
+
+    expect(shippingInfo).toMatch(/shipping cost/i);
+    expect(shippingInfo).toMatch(/\$10/i);
+    expect(shippingInfo).toMatch(/2/i);
+  });
+
+  it("should return 'Shipping Unavailable' if the quote is not available", () => {
+    vi.mocked(getShippingQuote).mockReturnValue(null as any);
+
+    const shippingInfo = getShippingInfo("US");
+
+    expect(shippingInfo).toMatch(/shipping unavailable/i);
   });
 });
