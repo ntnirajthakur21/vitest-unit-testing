@@ -1,12 +1,15 @@
+import { trackPageView } from "../libs/analytics";
 import { getExchangeRate } from "../libs/currency";
 import { getShippingQuote } from "../libs/shipping";
-import { getPriceInCurrency, getShippingInfo } from "../mocking";
+import { getPriceInCurrency, getShippingInfo, renderPage } from "../mocking";
 
 // This will mock the getExchangeRate function from the currency module
 // this line is hoisted to the top of the file - so it will be executed before the getPriceInCurrency function is called
 vi.mock("../libs/currency");
 
 vi.mock("../libs/shipping");
+
+vi.mock("../libs/analytics");
 
 describe("mock", () => {
   it("should mock a function", () => {
@@ -71,5 +74,19 @@ describe("getShippingInfo", () => {
     const shippingInfo = getShippingInfo("US");
 
     expect(shippingInfo).toMatch(/shipping unavailable/i);
+  });
+});
+
+describe("renderPage", () => {
+  it("should contain the content", async () => {
+    const page = await renderPage();
+
+    expect(page).match(/content/i);
+  });
+
+  it("should call trackPageView with the correct path", async () => {
+    await renderPage();
+
+    expect(trackPageView).toHaveBeenCalledWith("/home");
   });
 });
