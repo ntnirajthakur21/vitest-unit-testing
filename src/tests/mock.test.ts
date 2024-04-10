@@ -1,7 +1,13 @@
 import { trackPageView } from "../libs/analytics";
 import { getExchangeRate } from "../libs/currency";
+import { charge } from "../libs/payment";
 import { getShippingQuote } from "../libs/shipping";
-import { getPriceInCurrency, getShippingInfo, renderPage } from "../mocking";
+import {
+  getPriceInCurrency,
+  getShippingInfo,
+  renderPage,
+  submitOrder,
+} from "../mocking";
 
 // This will mock the getExchangeRate function from the currency module
 // this line is hoisted to the top of the file - so it will be executed before the getPriceInCurrency function is called
@@ -10,6 +16,8 @@ vi.mock("../libs/currency");
 vi.mock("../libs/shipping");
 
 vi.mock("../libs/analytics");
+
+vi.mock("../libs/payment");
 
 describe("mock", () => {
   it("should mock a function", () => {
@@ -88,5 +96,36 @@ describe("renderPage", () => {
     await renderPage();
 
     expect(trackPageView).toHaveBeenCalledWith("/home");
+  });
+});
+
+describe("submitOrder", () => {
+  const order = { totalAmount: 100 };
+  const creditCard = { creditCardNumber: "1234" };
+
+  it("should return success if the payment is successful", async () => {
+    vi.mocked(charge).mockResolvedValue({ status: "success" });
+
+    const result = await submitOrder(order, creditCard);
+
+    expect(result.success).toBe(true);
+  });
+
+  it("should call charge with the correct arguments", async () => {
+    vi.mocked(charge).mockResolvedValue({ status: "success" });
+
+    await submitOrder(order, creditCard);
+
+    expect(charge).toHaveBeenCalledWith(creditCard, order.totalAmount);
+  });
+
+  it("should return error if the payment is failed", async () => {
+    vi.mocked(charge).mockResolvedValue({ status: "failed" });
+
+    const result = await submitOrder(order, creditCard);
+
+    expect(result.success).toBe(false);
+    expect(result).toHaveProperty("error");
+    expect(result.error).toMatch(/error/i);
   });
 });
