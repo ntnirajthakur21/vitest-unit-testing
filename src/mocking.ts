@@ -1,5 +1,6 @@
 import { trackPageView } from "./libs/analytics";
 import { getExchangeRate } from "./libs/currency";
+import { isValidEmail, sendEmail } from "./libs/email";
 import { charge } from "./libs/payment";
 import { getShippingQuote } from "./libs/shipping";
 
@@ -35,4 +36,12 @@ export async function submitOrder(
   }
 
   return { success: true };
+}
+
+export async function signUp(email: string) {
+  if (!isValidEmail(email)) return false;
+
+  await sendEmail(email, "Welcome aboard!");
+
+  return true;
 }

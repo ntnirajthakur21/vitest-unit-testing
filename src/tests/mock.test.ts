@@ -1,11 +1,13 @@
 import { trackPageView } from "../libs/analytics";
 import { getExchangeRate } from "../libs/currency";
+import { sendEmail } from "../libs/email";
 import { charge } from "../libs/payment";
 import { getShippingQuote } from "../libs/shipping";
 import {
   getPriceInCurrency,
   getShippingInfo,
   renderPage,
+  signUp,
   submitOrder,
 } from "../mocking";
 
@@ -18,6 +20,19 @@ vi.mock("../libs/shipping");
 vi.mock("../libs/analytics");
 
 vi.mock("../libs/payment");
+
+// This will mock the sendEmail function from the email module
+vi.mock("../libs/email", async (importOriginalModule) => {
+  const originalModule = await importOriginalModule<
+    typeof import("../libs/email")
+  >();
+  return {
+    // Spread the original module to keep the original implementation
+    ...originalModule,
+    // Mock the sendEmail function to return immediately without sending an email
+    sendEmail: vi.fn(),
+  };
+});
 
 describe("mock", () => {
   it("should mock a function", () => {
@@ -127,5 +142,33 @@ describe("submitOrder", () => {
     expect(result.success).toBe(false);
     expect(result).toHaveProperty("error");
     expect(result.error).toMatch(/error/i);
+  });
+});
+
+describe("signUp", () => {
+  it("should return true if the email is valid", async () => {
+    const email = "contact@nirajthakur.com.np";
+
+    const result = await signUp(email);
+
+    expect(result).toBe(true);
+  });
+
+  it("should call sendEmail with the correct arguments", async () => {
+    const email = "contact@nirajthakur.com.np";
+    await signUp(email);
+
+    const args = vi.mocked(sendEmail).mock.calls[0];
+
+    expect(args).toHaveLength(2);
+    expect(args[0]).toBe(email);
+  });
+
+  it("should return false if the email is invalid", async () => {
+    const email = "invalid-email";
+    const result = await signUp(email);
+
+    expect(result).toBe(false);
+    expect(sendEmail).not.toHaveBeenCalled();
   });
 });
