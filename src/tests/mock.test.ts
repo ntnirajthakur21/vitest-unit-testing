@@ -5,6 +5,7 @@ import { charge } from "../libs/payment";
 import security, { generateCode } from "../libs/security";
 import { getShippingQuote } from "../libs/shipping";
 import {
+  getDiscount,
   getPriceInCurrency,
   getShippingInfo,
   isOnline,
@@ -204,5 +205,19 @@ describe("isOnline", () => {
     vi.setSystemTime("2024-01-01 07:00");
     const result = isOnline();
     expect(result).toBeFalsy();
+  });
+});
+
+describe("getDiscount", () => {
+  it("should retuen true if today is Christmas", () => {
+    vi.setSystemTime("2024-12-25");
+    const result = getDiscount();
+    expect(result).toBeGreaterThan(0);
+  });
+
+  it("should return false if today is not Christmas", () => {
+    vi.setSystemTime("2024-01-01");
+    const result = getDiscount();
+    expect(result).toBe(0);
   });
 });
