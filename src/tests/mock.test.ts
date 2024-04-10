@@ -7,6 +7,7 @@ import { getShippingQuote } from "../libs/shipping";
 import {
   getPriceInCurrency,
   getShippingInfo,
+  isOnline,
   login,
   renderPage,
   signUp,
@@ -189,5 +190,19 @@ describe("login", () => {
     const code = spy.mock.results[0].value.toString();
 
     expect(sendEmail).toHaveBeenCalledWith(email, code);
+  });
+});
+
+describe("isOnline", () => {
+  it("should return if current time is within the available hours", () => {
+    vi.setSystemTime("2024-01-01 10:00");
+    const result = isOnline();
+    expect(result).toBeTruthy();
+  });
+
+  it("should return false if current time is outside the available hours", () => {
+    vi.setSystemTime("2024-01-01 07:00");
+    const result = isOnline();
+    expect(result).toBeFalsy();
   });
 });
