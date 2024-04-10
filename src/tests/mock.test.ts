@@ -2,10 +2,12 @@ import { trackPageView } from "../libs/analytics";
 import { getExchangeRate } from "../libs/currency";
 import { sendEmail } from "../libs/email";
 import { charge } from "../libs/payment";
+import security, { generateCode } from "../libs/security";
 import { getShippingQuote } from "../libs/shipping";
 import {
   getPriceInCurrency,
   getShippingInfo,
+  login,
   renderPage,
   signUp,
   submitOrder,
@@ -170,5 +172,22 @@ describe("signUp", () => {
 
     expect(result).toBe(false);
     expect(sendEmail).not.toHaveBeenCalled();
+  });
+});
+
+describe("login", () => {
+  it("should call sendEmail with the correct arguments", async () => {
+    const email = "contact@nirajthakur.com.np";
+
+    // spy on the generateCode function from the security module
+    // this will allow us to get the generated code
+    // and assert that it is sent in the email
+    const spy = vi.spyOn(security, "generateCode");
+
+    await login(email);
+
+    const code = spy.mock.results[0].value.toString();
+
+    expect(sendEmail).toHaveBeenCalledWith(email, code);
   });
 });

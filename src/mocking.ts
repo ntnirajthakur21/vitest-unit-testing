@@ -2,6 +2,7 @@ import { trackPageView } from "./libs/analytics";
 import { getExchangeRate } from "./libs/currency";
 import { isValidEmail, sendEmail } from "./libs/email";
 import { charge } from "./libs/payment";
+import security from "./libs/security";
 import { getShippingQuote } from "./libs/shipping";
 
 export function getPriceInCurrency(price: number, currency: string) {
@@ -44,4 +45,10 @@ export async function signUp(email: string) {
   await sendEmail(email, "Welcome aboard!");
 
   return true;
+}
+
+export async function login(email: string) {
+  const code = security.generateCode();
+
+  await sendEmail(email, code.toString());
 }
